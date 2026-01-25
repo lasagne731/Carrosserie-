@@ -3,256 +3,454 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Master Garage Pro</title>
+    <title>Master Garage Fusion</title>
     <style>
-        /* DESIGN GENERAL */
-        body { 
-            background-color: #121212; 
-            color: white; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; 
-            padding: 15px; 
-            padding-bottom: 100px; /* Espace pour le menu du bas */
+        /* --- STYLE DU MENU PRINCIPAL --- */
+        #main-launcher {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; background: #0f172a; font-family: sans-serif; gap: 25px;
         }
-
-        h1 { text-align: center; font-size: 22px; margin-bottom: 20px; color: #ecf0f1; }
-        h2 { border-bottom: 2px solid #555; padding-bottom: 5px; margin-top: 30px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* GRILLE DE BOUTONS */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
-            gap: 12px; 
+        .launch-card {
+            width: 85%; padding: 30px 20px; border-radius: 20px; border: none;
+            color: white; font-size: 1.3rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: 0.2s;
         }
-
-        /* STYLE DES BOUTONS */
-        .btn { 
-            background: #2c3e50; 
-            border: 2px solid #34495e; 
-            border-radius: 12px; 
-            padding: 15px 5px; 
-            text-align: center; 
-            cursor: pointer; 
-            transition: transform 0.1s, background 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-        }
+        .btn-orange { background: linear-gradient(135deg, #ea580c, #c2410c); }
+        .btn-blue { background: linear-gradient(135deg, #2c3e50, #1a252f); }
+        .launch-card:active { transform: scale(0.95); }
         
-        .btn:active { transform: scale(0.96); }
-
-        .btn span.name { font-size: 16px; font-weight: 600; display: block; margin-bottom: 5px; }
-        .btn span.price { font-size: 13px; color: #bdc3c7; font-weight: normal; }
-
-        /* COULEURS SPECIFIQUES */
-        /* Peinture (Orange) */
-        .cat-peinture .btn.active { background-color: #d35400; border-color: #e67e22; box-shadow: 0 0 10px rgba(230, 126, 34, 0.4); }
-        /* Fournitures (Bleu) */
-        .cat-fourniture .btn.active { background-color: #2980b9; border-color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.4); }
-
-        /* MENU DU BAS FIXE */
-        .bottom-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #1a1a1a; border-top: 1px solid #333;
-            padding: 15px; display: flex; gap: 10px;
-            z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        /* Navigation de retour */
+        .btn-back {
+            position: fixed; top: 10px; left: 10px; z-index: 99999;
+            background: rgba(0,0,0,0.6); color: white; border: 1px solid white;
+            padding: 8px 12px; border-radius: 10px; font-size: 12px; display: none;
         }
-        .action-btn {
-            flex: 1; padding: 15px; border-radius: 8px; border: none;
-            font-weight: bold; font-size: 16px; color: white; cursor: pointer;
+
+        .app-container { display: none; width: 100%; min-height: 100vh; }
+
+        /* --- STYLES ORIGINAUX FOURNITURES --- */
+        :root {
+            --primary-600: #ea580c; --primary-700: #c2410c; --primary-50: #fff7ed;
+            --primary-100: #ffedd5; --primary-200: #fed7aa;
         }
-        .btn-export { background: #27ae60; } /* Vert */
-        .btn-reset { background: #c0392b; } /* Rouge */
-        
-        /* CHAMP DE TEXTE (IMMAT) */
-        .input-zone { margin-bottom: 20px; }
-        .input-zone input { 
-            width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #444; 
-            background: #222; color: white; font-size: 18px; box-sizing: border-box;
-        }
+        #app-fournitures { background: #f8fafc; color: #0f172a; font-family: sans-serif; }
+        .f-header { background: white; padding: 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .f-nav { display: flex; overflow-x: auto; gap: 0.5rem; padding: 0.5rem 0; scrollbar-width: none; }
+        .f-nav::-webkit-scrollbar { display: none; }
+        .f-nav button { padding: 0.5rem 1rem; border-radius: 9999px; border: 1px solid #e2e8f0; background: white; white-space: nowrap; font-size: 0.875rem; font-weight: 500; }
+        .f-nav button.active { background: var(--primary-600); color: white; border-color: var(--primary-600); }
+        .f-card { background: white; border-radius: 0.75rem; padding: 1rem; margin-bottom: 0.75rem; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+        .f-qty { display: flex; align-items: center; gap: 1rem; }
+        .f-btn-qty { width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: #f1f5f9; font-size: 1.25rem; font-weight: bold; }
+        .f-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 1rem; display: flex; gap: 0.75rem; border-top: 1px solid #e2e8f0; }
+        .f-main-btn { flex: 1; padding: 0.75rem; border-radius: 0.5rem; font-weight: 600; text-align: center; }
+        .f-btn-share { background: var(--primary-600); color: white; border: none; }
+        .f-btn-print { background: #0f172a; color: white; border: none; }
+        @media print { .no-print { display: none !important; } #print-content { display: block !important; } body { background: white; } }
+        #print-content { display: none; padding: 20px; font-family: monospace; color: black; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
 
-    <h1>🚘 MASTER GARAGE</h1>
+    <button id="global-back-btn" class="btn-back no-print" onclick="exitApp()">⬅ Menu</button>
 
-    <div class="input-zone">
-        <input type="text" id="immat" placeholder="Immatriculation / Dossier...">
+    <div id="main-launcher">
+        <div style="text-align: center; color: white; margin-bottom: 10px;">
+            <h1 style="margin:0;">MASTER GARAGE</h1>
+            <p style="opacity: 0.7;">Choisissez votre outil</p>
+        </div>
+        <button class="launch-card btn-orange" onclick="startApp('fournitures')">📦 COMMANDE<br>FOURNITURES</button>
+        <button class="launch-card btn-blue" onclick="startApp('ppg')">🎨 PPG PSA<br>MANAGER</button>
     </div>
 
-    <div id="app-container">
-        <h2 style="color: #e67e22;">🎨 Peinture</h2>
-        <div class="grid cat-peinture">
-            
-            <div class="btn" onclick="toggle(this, 'Peinture: PC Avant', 150)">
-                <span class="name">PC Avant</span>
-                <span class="price">150 €</span>
-            </div>
+    <div id="app-fournitures" class="app-container">
+        <header class="no-print" style="background: var(--primary-600); color: white; padding: 1rem; text-align: center;">
+            <h1 id="main-title" style="margin: 0; font-size: 1.25rem; text-transform: uppercase;">BON DE COMMANDE</h1>
+            <p style="margin: 0; font-size: 0.75rem; opacity: 0.8;">Fournitures v6.7</p>
+        </header>
 
-            <div class="btn" onclick="toggle(this, 'Peinture: PC Arrière', 150)">
-                <span class="name">PC Arrière</span>
-                <span class="price">150 €</span>
-            </div>
+        <div id="tab-bar" class="no-print"></div>
+        <div id="product-list" class="no-print" style="padding: 1rem; padding-bottom: 100px;"></div>
 
-            <div class="btn" onclick="toggle(this, 'Peinture: Aile Avant', 120)">
-                <span class="name">Aile Avant</span>
-                <span class="price">120 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Aile Arrière', 130)">
-                <span class="name">Aile Arrière</span>
-                <span class="price">130 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Porte Avant', 140)">
-                <span class="name">Porte AV</span>
-                <span class="price">140 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Porte Arrière', 140)">
-                <span class="name">Porte AR</span>
-                <span class="price">140 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Capot', 200)">
-                <span class="name">Capot</span>
-                <span class="price">200 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Coffre/Hayon', 160)">
-                <span class="name">Coffre</span>
-                <span class="price">160 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Toit', 250)">
-                <span class="name">Toit</span>
-                <span class="price">250 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Peinture: Rétroviseur', 40)">
-                <span class="name">Rétro</span>
-                <span class="price">40 €</span>
-            </div>
-            
-             <div class="btn" onclick="toggle(this, 'Peinture: Poignée', 30)">
-                <span class="name">Poignée</span>
-                <span class="price">30 €</span>
-            </div>
-
-             <div class="btn" onclick="toggle(this, 'Peinture: Jante', 60)">
-                <span class="name">Jante</span>
-                <span class="price">60 €</span>
-            </div>
-
+        <div class="footer-nav no-print" style="position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; border-top: 1px solid #e5e7eb; z-index: 30;">
+            <button onclick="generatePrint()" class="btn-action btn-print" style="grid-column: span 2; background: #16a34a;">🖨️ PDF PRO</button>
+            <button onclick="shareOrder()" class="btn-action btn-share" style="background: var(--primary-600);">📤 PARTAGE</button>
+            <button onclick="resetAll()" class="btn-action btn-reset" style="background: #e5e7eb; color: #374151;">RÉINIT.</button>
         </div>
 
-        <h2 style="color: #3498db;">🛠 Fournitures</h2>
-        <div class="grid cat-fourniture">
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Disque P80', 2)">
-                <span class="name">Disque P80</span>
-                <span class="price">2 €</span>
+        <div id="print-zone" class="print-only" style="padding: 10px;">
+            <div style="border-bottom: 4px solid black; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end;">
+                <h1 style="text-transform: uppercase; margin:0;">Bon de Commande</h1>
+                <p id="print-date" style="font-weight: bold;"></p>
             </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Disque P120', 2)">
-                <span class="name">Disque P120</span>
-                <span class="price">2 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Disque P240', 2)">
-                <span class="name">Disque P240</span>
-                <span class="price">2 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Disque P400', 2)">
-                <span class="name">Disque P400</span>
-                <span class="price">2 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Mastic', 15)">
-                <span class="name">Mastic</span>
-                <span class="price">15 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Apprêt (Dose)', 25)">
-                <span class="name">Apprêt</span>
-                <span class="price">25 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Vernis (Dose)', 40)">
-                <span class="name">Vernis</span>
-                <span class="price">40 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Masquage', 5)">
-                <span class="name">Masquage</span>
-                <span class="price">5 €</span>
-            </div>
-
-            <div class="btn" onclick="toggle(this, 'Fourniture: Diluant', 10)">
-                <span class="name">Diluant</span>
-                <span class="price">10 €</span>
-            </div>
+            <div id="print-content" class="print-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
+        </div>
+    </div> <script>
+        const defaultData = {
+            "ABRASIF": [{n: "Scotchbrite", r: "3M07904"}, {n: "Disque P120", r: "LKENA1290"}, {n: "Disque P180", r: "LKENA1292"}, {n: "Disque P240", r: "LKENA1294"}, {n: "Disque P320", r: "LKENA1295"}, {n: "Disque P400", r: "LKENA1296"}, {n: "Disque P500", r: "LKENA1455"}, {n: "Disque P600", r: "LKENA1298"}, {n: "EPONGE P600", r: "LKENA1468"}, {n: "EPONGE P1000", r: "LKENA1469"}, {n: "Soft hand P400", r: "3M50337"}, {n: "Soft hand P600", r: "3M50339"}, {n: "Soft hand P800", r: "3M50340"}, {n: "CUBITRON P80", r: "3M34561"}, {n: "CUBITRON P120 LARGE", r: "3M34573"}, {n: "CUBITRON P120", r: "3M34562"}, {n: "CUBITRON P240", r: "3M34566"}, {n: "CUBITRON P400", r: "3M51437"}, {n: "Feuille bleu P400", r: "3M35110"}, {n: "Feuille bleu P600", r: "3M35111"}, {n: "Feuille bleu P800", r: "3M35112"}, {n: "Triz 32mm 3000", r: "3M50079", s: 100}, {n: "Triz 75mm 1000", r: "3M50413", s: 15}, {n: "Triz 75mm 3000", r: "3M02087", s: 15}, {n: "Triz 75mm 6000", r: "3M51131", s: 15}, {n: "Triz 150mm 3000", r: "3M02085", s: 15}],
+            "MAROUFLAGE": [{n: "Bandecache 50mm", r: "3M06313"}, {n: "Bandecache 50mm vert", r: "3M50981"}, {n: "Bandecache 18mm jaune", r: "LKEN85781"}, {n: "Ruban mousse", r: "3M09678"}, {n: "Papier craft", r: "3M06284"}, {n: "Bache", r: "3M50988"}],
+            "MASTIC": [{n: "Mastic polyester", r: "3M00051076"}, {n: "Mastic plastique", r: "LKEN86958"}, {n: "Mastique KENT", r: "LKEN86942"}, {n: "Mastic fibre", r: "LKEN86959"}, {n: "Mastice allu", r: "LKEN86961"}],
+            "PRÉPA / ÉQUIP.": [{n: "Bol prépa 650ml", r: "997180"}, {n: "Bol prépa 1100ml", r: "997181"}, {n: "PPS 400ml", r: "3M26312"}, {n: "PPS 650ml", r: "3M26026"}, {n: "Pot 2l", r: "3M50405"}, {n: "Essuie main", r: "1606242080"}, {n: "Chiffon 3M", r: "3M34567"}, {n: "Tampon essuyage", r: "973844"}, {n: "Filtre cornet", r: "9739G5"}],
+            "LUSTRANT / MOUSSE": [{n: "Mousse lustrage", r: "3M34124"}, {n: "Mousse lustrage", r: "3M34127"}, {n: "Lustrant blanc", r: "3M34131"}, {n: "Lustrant violet", r: "3M34134"}, {n: "Bobidou", r: "LGET100521"}, {n: "Chiffon lustrage", r: "3M60668"}, {n: "Doubleface", r: "3M80322"}],
+            "COMBINAISON": [{n: "Combinaison M", r: "3M4540+M"}, {n: "Combinaison L", r: "3M4540+L"}, {n: "Combinaison XL", r: "3M4540+XL"}, {n: "Masque poussière", r: "3M8822"}],
+            "BOMBE PEINTURE": [{n: "Vernis", r: "LKEN84110"}, {n: "Bombe noir mat", r: "LKEN86245"}, {n: "Noir structurant", r: "LKEN86735"}],
+            "AUTRE": [{n: "Corde à piano", r: "KE0209"}, {n: "Passe fil parbrise", r: "KE0109"}, {n: "Buse Bi-compos", r: "K86031"}, {n: "Cleaner plastique", r: "K34699"}, {n: "Gant protection", r: "1613412380"}, {n: "Agrafe torsadé", r: "K86040"}, {n: "Agrafe torsadé Longue", r: "K86358"}, {n: "Agrafe angle ext", r: "K86279"}, {n: "Agrafe angle int", r: "K86280"}, {n: "Agrafe courte normal", r: "K86038"}, {n: "Glu cyanno liquide", r: "GET1CY20"}, {n: "pinceau retouche", r: "GET3PRV"}, {n: "Chiffon tissu", r: "972459"}, {n: "Buse standard", r: "LKEN34192"}, {n: "Chican", r: "LKEN85385"}, {n: "Produit jante", r: "LBAR37136"}]
+        };
+    <script>
+        // --- NAVIGATION ENTRE LES APPLICATIONS ---
+        function startApp(appId) {
+            // Cache le menu et affiche l'application choisie
+            document.getElementById('main-launcher').style.display = 'none';
+            document.getElementById('global-back-btn').style.display = 'block';
+            document.getElementById('app-' + appId).style.display = 'block';
             
-            <div class="btn" onclick="toggle(this, 'Fourniture: Chiffon', 2)">
-                <span class="name">Chiffon</span>
-                <span class="price">2 €</span>
-            </div>
+            // Initialise l'appli spécifique si besoin
+            if(appId === 'fournitures') initFournitures();
+            if(appId === 'ppg') initPPG(); // Sera défini en partie 5
+        }
 
+        function exitApp() {
+            // Retour au menu principal
+            document.getElementById('main-launcher').style.display = 'flex';
+            document.getElementById('global-back-btn').style.display = 'none';
+            document.querySelectorAll('.app-container').forEach(app => app.style.display = 'none');
+        }
+
+        // --- MOTEUR FOURNITURES ---
+        let myData = defaultData; 
+        let quantities = {};
+
+        function initFournitures() {
+            const categories = Object.keys(myData);
+            renderTabs(categories);
+            renderProducts(categories[0]);
+        }
+
+        function renderTabs(cats) {
+            const bar = document.getElementById('tab-bar');
+            bar.innerHTML = cats.map((c, i) => 
+                `<button onclick="setActiveTab(this, '${c}')" class="${i===0?'active':''}">
+                    ${c}
+                </button>`
+            ).join('');
+        }
+
+        function setActiveTab(btn, cat) {
+            document.querySelectorAll('#tab-bar button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts(cat);
+        }
+
+        function renderProducts(cat) {
+            const list = document.getElementById('product-list');
+            list.innerHTML = myData[cat].map(p => {
+                if(!quantities[p.r]) quantities[p.r] = 0;
+                return `
+                    <div class="f-card">
+                        <div>
+                            <div style="font-weight:bold">${p.n}</div>
+                            <div style="font-size:0.75rem; color:#64748b; font-family:monospace;">${p.r}</div>
+                        </div>
+                        <div class="f-qty">
+                            <button class="f-btn-qty" onclick="updateQty('${p.r}', -1)">-</button>
+                            <span id="qty-${p.r}" style="min-width:25px; text-align:center; font-weight:bold; font-size:1.1rem;">${quantities[p.r]}</span>
+                            <button class="f-btn-qty" onclick="updateQty('${p.r}', 1)" style="background:var(--primary-100); border-color:var(--primary-200);">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateQty(ref, delta) {
+            quantities[ref] = Math.max(0, (quantities[ref] || 0) + delta);
+            const el = document.getElementById('qty-' + ref);
+            if(el) el.innerText = quantities[ref];
+        }
+
+        function resetAll() {
+            if(confirm("Voulez-vous effacer toute la commande en cours ?")) {
+                quantities = {};
+                const activeCat = document.querySelector('#tab-bar button.active').innerText;
+                renderProducts(activeCat);
+            }
+        }
+
+        function shareOrder() {
+            let text = "📦 *BON DE COMMANDE FOURNITURES*\n\n";
+            let hasItems = false;
+            Object.keys(myData).forEach(cat => {
+                const items = myData[cat].filter(p => quantities[p.r] > 0);
+                if(items.length > 0) {
+                    hasItems = true;
+                    text += `*--- ${cat} ---*\n`;
+                    items.forEach(p => text += `• ${p.n} (${p.r}) x${quantities[p.r]}\n`);
+                    text += "\n";
+                }
+            });
+
+            if(!hasItems) return alert("Votre commande est vide !");
+            
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function generatePrint() {
+            const pc = document.getElementById('print-content');
+            pc.innerHTML = "";
+            let empty = true;
+            document.getElementById('print-date').innerText = new Date().toLocaleDateString('fr-FR');
+
+            Object.keys(myData).forEach(cat => {
+                const items = myData[cat].filter(p => quantities[p.r] > 0);
+                if(items.length > 0) {
+                    empty = false;
+                    let h = `<div style="margin-bottom:20px;">
+                                <div style="background:#000; color:white; padding:5px; font-weight:bold; font-size:12px;">${cat}</div>
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <thead><tr style="font-size:10px; text-align:left;"><th style="border:1px solid #ddd; padding:5px;">Produit</th><th style="border:1px solid #ddd; padding:5px;">Réf</th><th style="border:1px solid #ddd; padding:5px; text-align:center;">Qté</th></tr></thead>
+                                    <tbody>`;
+                    items.forEach(p => {
+                        h += `<tr style="font-size:11px;"><td style="border:1px solid #ddd; padding:5px; font-weight:bold;">${p.n}</td><td style="border:1px solid #ddd; padding:5px;">${p.r}</td><td style="border:1px solid #ddd; padding:5px; text-align:center; font-weight:bold;">${quantities[p.r]}</td></tr>`;
+                    });
+                    pc.innerHTML += h + `</tbody></table></div>`;
+                }
+            });
+
+            if(empty) alert("Rien à imprimer (commande vide)"); else window.print();
+        }
+    </script>
+    <div id="app-ppg" class="app-container">
+        <style>
+            /* --- STYLES SPECIFIQUES PPG PSA (ISOLÉS) --- */
+            #app-ppg { 
+                --ppg-primary: #2c3e50; --ppg-accent: #34495e; 
+                --ppg-success: #27ae60; --ppg-danger: #e74c3c;
+                background: #f8f9fa; color: #333; font-family: sans-serif;
+            }
+            #app-ppg nav { 
+                background: var(--ppg-primary); display: flex; 
+                justify-content: space-around; padding: 10px 0; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            }
+            #app-ppg nav button { 
+                background: none; border: none; color: rgba(255,255,255,0.7); 
+                font-size: 14px; padding: 10px; cursor: pointer;
+            }
+            #app-ppg nav button.active { color: white; border-bottom: 2px solid white; }
+            #app-ppg .content { padding: 15px; flex: 1; overflow-y: auto; }
+            #app-ppg .search-box { 
+                width: 100%; padding: 12px; border: 1px solid #ddd; 
+                border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 16px;
+            }
+            #app-ppg .card { 
+                background: white; border-radius: 8px; padding: 15px; 
+                margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                display: flex; justify-content: space-between; align-items: center;
+            }
+            #app-ppg .btn-add { background: var(--ppg-success); color: white; border: none; padding: 8px 15px; border-radius: 5px; }
+            #app-ppg .btn-del { background: var(--ppg-danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; }
+            #app-ppg .badge { background: var(--ppg-danger); color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; vertical-align: top; }
+        </style>
+
+        <nav>
+            <button onclick="showTab('recherche')" id="tab-recherche" class="active">🔍 Recherche</button>
+            <button onclick="showTab('panier')" id="tab-panier">🛒 Panier <span id="cart-count" class="badge">0</span></button>
+            <button onclick="showTab('catalogue')" id="tab-catalogue">📚 Catalogue</button>
+        </nav>
+
+        <div id="view-recherche" class="content ppg-view">
+            <input type="text" id="search-input" class="search-box" placeholder="Chercher une réf ou un nom..." oninput="search()">
+            <div id="search-results"></div>
         </div>
 
+        <div id="view-panier" class="content ppg-view" style="display:none;">
+            <div id="cart-items"></div>
+            <div style="margin-top:20px; display: flex; gap: 10px;">
+                <button onclick="shareCart()" style="flex:2; background:var(--ppg-success); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">📤 Partager la commande</button>
+                <button onclick="clearCart()" style="flex:1; background:var(--ppg-danger); color:white; border:none; padding:15px; border-radius:8px;">Vider</button>
+            </div>
+        </div>
+
+        <div id="view-catalogue" class="content ppg-view" style="display:none;">
+            <div style="background:white; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <h4>Gestion Catalogue</h4>
+                <input type="file" id="import-file" style="display:none" onchange="importCatalogue(event)">
+                <button onclick="document.getElementById('import-file').click()" style="width:100%; margin-bottom:10px; padding:10px; border:1px solid #ddd; border-radius:5px;">📥 Importer JSON</button>
+                <button onclick="exportCatalogue()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;">📤 Exporter JSON</button>
+            </div>
+            <div id="full-catalogue"></div>
+        </div>
     </div> ```
 
-    <div class="bottom-bar">
-        <button class="action-btn btn-reset" onclick="resetAll()">Effacer</button>
-        <button class="action-btn btn-export" onclick="exportData()">Partager / Exporter</button>
-    </div>
-
+ 
     <script>
-        let selection = [];
+        let ppgCatalogue = JSON.parse(localStorage.getItem('ppg_data')) || [];
+        let ppgBasket = {};
 
-        // Fonction pour activer/désactiver un bouton
-        function toggle(element, name, price) {
-            element.classList.toggle('active');
+        // Initialisation de l'application PPG
+        function initPPG() {
+            renderCatalogueManagement();
+            renderOrder();
+        }
+
+        // Gestion des onglets internes à PPG
+        function showTab(tabName) {
+            document.querySelectorAll('.ppg-view').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('#app-ppg nav button').forEach(b => b.classList.remove('active'));
             
-            const index = selection.findIndex(item => item.name === name);
-            if (index > -1) {
-                selection.splice(index, 1); // Retirer si déjà présent
+            document.getElementById('view-' + tabName).style.display = 'block';
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            if(tabName === 'catalogue') renderCatalogueManagement();
+        }
+
+        // Sauvegarde locale
+        function savePPG() {
+            localStorage.setItem('ppg_data', JSON.stringify(ppgCatalogue));
+            renderCatalogueManagement();
+        }
+
+        [span_0](start_span)[span_1](start_span)// Recherche dans le catalogue[span_0](end_span)[span_1](end_span)
+        function search() {
+            const q = document.getElementById('search-input').value.toUpperCase();
+            const res = document.getElementById('search-results');
+            if(q.length < 1) { res.innerHTML = ""; return; }
+            
+            const hits = ppgCatalogue.filter(i => {
+                const ppgVal = (i.ppg || i.ref_ppg || "").toUpperCase();
+                const nomVal = (i.nom || "").toUpperCase();
+                return ppgVal.includes(q) || nomVal.includes(q);
+            }).slice(0, 15);
+
+            res.innerHTML = hits.map(i => {
+                const displayPpg = i.ppg || i.ref_ppg;
+                const displayPsa = i.psa || i.ref_psa;
+                return `
+                    <div class="card" onclick="addToPPGBasket('${displayPpg}')">
+                        <div>
+                            <strong>${displayPpg}</strong><br>
+                            <small>${i.nom}</small>
+                        </div>
+                        <span style="color:var(--ppg-danger); font-family:monospace; font-weight:bold;">${displayPsa}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        [span_2](start_span)[span_3](start_span)// Gestion du panier[span_2](end_span)[span_3](end_span)
+        function addToPPGBasket(ppgCode) {
+            const item = ppgCatalogue.find(i => (i.ppg === ppgCode || i.ref_ppg === ppgCode));
+            if(!item) return;
+
+            const ppg = item.ppg || item.ref_ppg;
+            if(ppgBasket[ppg]) {
+                ppgBasket[ppg].qty++;
             } else {
-                selection.push({ name: name, price: price }); // Ajouter
+                ppgBasket[ppg] = { nom: item.nom, ppg: ppg, psa: item.psa || item.ref_psa, qty: 1 };
             }
-        }
-
-        // Fonction pour tout effacer
-        function resetAll() {
-            if(confirm("Voulez-vous tout effacer ?")) {
-                selection = [];
-                document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-                document.getElementById('immat').value = "";
-            }
-        }
-
-        // Fonction pour exporter en JSON
-        function exportData() {
-            const immat = document.getElementById('immat').value || "SANS_IMMAT";
-            const total = selection.reduce((sum, item) => sum + item.price, 0);
             
-            const data = {
-                dossier: immat,
-                date: new Date().toLocaleString('fr-FR'),
-                elements: selection,
-                total: total
-            };
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-results').innerHTML = '';
+            updateCartCount();
+            renderOrder();
+            alert("Ajouté : " + item.nom);
+        }
 
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "Devis_" + immat + ".json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+        function updatePPGQty(ppg, delta) {
+            ppgBasket[ppg].qty += delta;
+            if(ppgBasket[ppg].qty <= 0) delete ppgBasket[ppg];
+            updateCartCount();
+            renderOrder();
+        }
+
+        function updateCartCount() {
+            const count = Object.keys(ppgBasket).length;
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        function renderOrder() {
+            const container = document.getElementById('cart-items');
+            if(Object.keys(ppgBasket).length === 0) {
+                container.innerHTML = "<p style='text-align:center; padding:20px; color:#888;'>Le panier est vide</p>";
+                return;
+            }
+            container.innerHTML = Object.keys(ppgBasket).map(ppg => {
+                const i = ppgBasket[ppg];
+                return `
+                    <div class="card">
+                        <div>
+                            <strong>${i.nom}</strong><br>
+                            <small>PPG: ${i.ppg} | PSA: ${i.psa}</small>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button class="btn-del" onclick="updatePPGQty('${ppg}', -1)">-</button>
+                            <strong>${i.qty}</strong>
+                            <button class="btn-add" onclick="updatePPGQty('${ppg}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearCart() {
+            if(confirm("Vider le panier ?")) {
+                ppgBasket = {};
+                updateCartCount();
+                renderOrder();
+            }
+        }
+
+        function shareCart() {
+            let text = "*COMMANDE PPG PSA*\n\n";
+            let hasItems = false;
+            for(let key in ppgBasket) {
+                hasItems = true;
+                text += `*${ppgBasket[key].nom}*\nPPG: ${ppgBasket[key].ppg}\nPSA: ${ppgBasket[key].psa}\nQté: ${ppgBasket[key].qty}\n\n`;
+            }
+            if(!hasItems) return alert("Le panier est vide !");
+            
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        [span_4](start_span)[span_5](start_span)// Gestion du catalogue (Import/Export)[span_4](end_span)[span_5](end_span)
+        function renderCatalogueManagement() {
+            const container = document.getElementById('full-catalogue');
+            container.innerHTML = `<h4>Produits (${ppgCatalogue.length})</h4>` + ppgCatalogue.map((item, index) => `
+                <div class="card" style="padding:10px; font-size:13px;">
+                    <span><b>${item.ppg || item.ref_ppg}</b> - ${item.nom}</span>
+                    <button class="btn-del" style="padding:4px 8px; font-size:10px;" onclick="deletePPGProduct(${index})">Suppr.</button>
+                </div>
+            `).join('');
+        }
+
+        function deletePPGProduct(index) {
+            if(confirm("Supprimer ce produit ?")) { ppgCatalogue.splice(index, 1); savePPG(); }
+        }
+
+        function exportCatalogue() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ppgCatalogue));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "catalogue_ppg.json");
+            dl.click();
+        }
+
+        function importCatalogue(event) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(confirm("Ajouter au catalogue actuel ? (Annuler pour remplacer)")) {
+                        ppgCatalogue = ppgCatalogue.concat(data);
+                    } else { ppgCatalogue = data; }
+                    savePPG();
+                    alert("Importation réussie !");
+                } catch(err) { alert("Erreur de fichier JSON"); }
+            };
+            reader.readAsText(event.target.files[0]);
         }
     </script>
 </body>
