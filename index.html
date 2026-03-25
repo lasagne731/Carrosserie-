@@ -809,50 +809,10 @@
         const body = document.getElementById('catalogueList');
         const count = document.getElementById('countDisplay');
         count.innerText = catalogue.length;
-        body.innerHTML = catalogue.map((item, index) => {
-            const p = item.ppg || item.ref_ppg;
-            return `
-                <tr>
-                    <td style="padding:8px">
-                        <b>${p}</b><br>${item.nom}
-                    </td>
-                    <td align="right" style="padding:8px">
-                        <button class="btn-small-del" onclick="deleteProduct(${index})">Suppr.</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-
-    function deleteProduct(index) {
-        if(confirm("Supprimer ce produit du catalogue ?")) {
-            catalogue.splice(index, 1);
-            save();
-        }
-    }
-
-
-    function clearCatalogue() {
-        if(confirm("Êtes-vous sûr de vouloir TOUT supprimer ? Cette action est irréversible.")) {
-            catalogue = [];
-            save();
-            alert("Catalogue vidé.");
-        }
-    }
-
-
-    function addProduct() {
-        const nom = document.getElementById('addNom').value.toUpperCase();
-        const ppg = document.getElementById('addPpg').value.toUpperCase();
-        const psa = document.getElementById('addPsa').value;
-        if(nom && ppg && psa) {
-            catalogue.push({nom, ppg, psa});
-            save();
             document.getElementById('addNom').value = '';
             document.getElementById('addPpg').value = '';
             document.getElementById('addPsa').value = '';
-            alert("Produit ajouté !");
+            alert("Produit ajoutÃ© !");
         }
     }
 
@@ -862,7 +822,7 @@
         let hasItems = false;
         for(let key in basket) {
             hasItems = true;
-            text += `*${basket[key].nom}*\nPPG: ${basket[key].ppg}\nPSA: ${basket[key].psa}\nQté: ${basket[key].qty}\n\n`;
+            text += `*${basket[key].nom}*\nPPG: ${basket[key].ppg}\nPSA: ${basket[key].psa}\nQtÃ©: ${basket[key].qty}\n\n`;
         }
         if(!hasItems) { alert("Le panier est vide !"); return; }
 
@@ -871,7 +831,7 @@
             navigator.share({ title: 'Commande', text: text });
         } else {
             navigator.clipboard.writeText(text);
-            alert("Copié dans le presse-papier !");
+            alert("CopiÃ© dans le presse-papier !");
         }
     }
 
@@ -890,14 +850,14 @@
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                // On fusionne l'ancien et le nouveau catalogue au lieu de tout écraser
-                if(confirm("Voulez-vous AJOUTER ces produits à votre liste actuelle ? (Annuler pour remplacer tout le catalogue)")) {
+                // On fusionne l'ancien et le nouveau catalogue au lieu de tout Ã©craser
+                if(confirm("Voulez-vous AJOUTER ces produits Ã  votre liste actuelle ? (Annuler pour remplacer tout le catalogue)")) {
                     catalogue = catalogue.concat(data);
                 } else {
                     catalogue = data;
                 }
                 save();
-                alert("Importation réussie !");
+                alert("Importation rÃ©ussie !");
             } catch(err) {
                 alert("Erreur : Le fichier JSON n'est pas valide.");
             }
@@ -906,16 +866,45 @@
     }
 
 
+    function renderHistory() {
+        const container = document.getElementById('historyList');
+        if (history.length === 0) {
+            container.innerHTML = '<p style="color:gray; font-size:14px;">Aucune commande en archive.</p>';
+            return;
+        }
+
+        container.innerHTML = history.map((order, index) => `
+            <div class="card" style="border-left: 4px solid var(--success); margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <small><b>Le ${order.date}</b></small>
+                    <button class="btn-small-del" onclick="deleteHistory(${index})">Effacer</button>
+                </div>
+                <ul style="font-size:12px; padding-left:20px; margin:10px 0;">
+                    ${Object.values(order.items).map(i => `<li>${i.nom} (x${i.qty})</li>`).join('')}
+                </ul>
+            </div>
+        `).join('');
+    }
+
+    function deleteHistory(index) {
+        if(confirm("Supprimer cette archive ?")) {
+            history.splice(index, 1);
+            localStorage.setItem('ppg_history', JSON.stringify(history));
+            renderHistory();
+        }
+    }
+
+
     renderCatalogueManagement();
 </script>
 </body>
 </html></template>
 
-    <div id="login"><div class="card"><h2>ACCÈS SÉCURISÉ</h2><input type="text" id="ui" placeholder="Utilisateur"><input type="password" id="pi" placeholder="Mot de passe"><button onclick="check()" class="btn-menu">CONNEXION</button></div></div>
+    <div id="login"><div class="card"><h2>ACCÃˆS SÃ‰CURISÃ‰</h2><input type="text" id="ui" placeholder="Utilisateur"><input type="password" id="pi" placeholder="Mot de passe"><button onclick="check()" class="btn-menu">CONNEXION</button></div></div>
     <div id="menu"><h1>MASTER GARAGE</h1><button class="btn-menu" onclick="showApp(0)">Consommable </button>
 <button class="btn-menu" onclick="showApp(1)">Peinture </button>
 </div>
-    <div id="view"><nav><button onclick="back()" class="btn-back">🏠 MENU</button></nav><iframe id="f"></iframe></div>
+    <div id="view"><nav><button onclick="back()" class="btn-back">ðŸ  MENU</button></nav><iframe id="f"></iframe></div>
 
     <script>
         const USERS = [{"u":"garage","p":"1234"}];
