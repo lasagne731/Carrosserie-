@@ -484,15 +484,6 @@
             }
         }
 
-                }
-            });
-            if(manualItems.length > 0) {
-                text += `*[HORS-STOCK]*\n`;
-                manualItems.forEach(i => text += `- ${i.n} : *x${i.q}*\n`);
-            }
-            navigator.share ? navigator.share({text}) : navigator.clipboard.writeText(text).then(()=>alert("Copié dans le presse-papier !"));
-        }
-
 
         function generatePrint() {
             document.getElementById('print-date').innerText = "Le " + new Date().toLocaleDateString('fr-FR');
