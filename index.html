@@ -16,6 +16,9 @@
         iframe { flex: 1; border: none; width: 100%; }
         .btn-back { background: #475569; color: white; border: none; padding: 10px 20px; border-radius: 8px; }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 </head>
 <body>
     <template id="app-code-0">﻿<!DOCTYPE html>
@@ -417,15 +420,70 @@
         }
 
 
-        function shareOrder() {
-            const date = new Date().toLocaleDateString('fr-FR');
-            let text = `📦 *COMMANDE FOURNITURES - ${date}*\n\n`;
+           async function shareOrder() {
+            // On vérifie que ton S24 Ultra autorise l'envoi de fichiers
+            if (!navigator.canShare) {
+                alert("Partage de fichier non supporté par ce navigateur.");
+                return;
+            }
+
+            // ÉTAPE 1 : Préparer la zone d'impression (comme ton bouton PDF PRO)
+            document.getElementById('print-date').innerText = "Le " + new Date().toLocaleDateString('fr-FR');
+            const pc = document.getElementById('print-content');
+            pc.innerHTML = "";
+            let empty = true;
+
+            const createTable = (title, items, isPreset) => {
+                let h = `<div class="category-block"><div style="background:#000; color:white; font-weight:bold; font-size:10pt; padding:3px 8px;">${title}</div><table><thead><tr><th>Article</th><th>Référence</th><th style="text-align:center">Qté</th></tr></thead><tbody>`;
+                items.forEach(p => {
+                    const q = isPreset ? quantities[p.r] : p.q;
+                    h += `<tr><td style="font-weight:bold; color:black;">${p.n}</td><td style="color:black; font-family:monospace; font-weight:bold;">${p.r}</td><td class="qty-cell" style="color:black;">${q}</td></tr>`;
+                });
+                return h + `</tbody></table></div>`;
+            }
+
             Object.keys(myData).forEach(cat => {
                 const items = myData[cat].filter(p => quantities[p.r] > 0);
-                if(items.length > 0) {
-                    text += `*[${cat}]*\n`;
-                    items.forEach(p => text += `- ${p.n} (${p.r}) : *x${quantities[p.r]}*\n`);
-                    text += `\n`;
+                if(items.length > 0) { empty = false; pc.innerHTML += createTable(cat, items, true); }
+            });
+            if(manualItems.length > 0) { empty = false; pc.innerHTML += createTable("HORS STOCK", manualItems, false); }
+
+            if(empty) { alert("Commande vide !"); return; }
+
+            // ÉTAPE 2 : Afficher temporairement la zone pour générer le PDF
+            const printZone = document.getElementById('print-zone');
+            printZone.style.display = 'block';
+
+            try {
+                // ÉTAPE 3 : Créer le fichier PDF en mémoire
+                const opt = {
+                    margin: 10,
+                    filename: 'Commande.pdf',
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                const pdfBlob = await html2pdf().set(opt).from(printZone).output('blob');
+                
+                // On recache la zone
+                printZone.style.display = 'none';
+
+                // ÉTAPE 4 : Créer le fichier final et ouvrir le menu de partage
+                const file = new File([pdfBlob], "Commande.pdf", { type: "application/pdf" });
+                
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: 'Bon de Commande',
+                        files: [file]
+                    });
+                } else {
+                    alert("Le partage de PDF direct n'est pas possible ici.");
+                }
+            } catch (err) {
+                printZone.style.display = 'none';
+                alert("Erreur lors de la génération : " + err);
+            }
+        }
+
                 }
             });
             if(manualItems.length > 0) {
