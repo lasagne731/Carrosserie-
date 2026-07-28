@@ -368,23 +368,22 @@
 
 
         function renderManualForm(container) {
-            container.innerHTML = `<div class="config-box box-orange">
-                <h3 style="margin-top:0; font-size: 14px; color: var(--primary-600);">HORS-STOCK (AJOUT MANUEL)</h3>
-                <input type="text" id="m-name" placeholder="Nom" class="input-std">
-                <input type="text" id="m-ref" placeholder="Réf (optionnel)" class="input-std">
-                <input type="number" id="m-qty" placeholder="Quantité" class="input-std">
-                <button onclick="addManualItem()" class="btn-action" style="background: var(--primary-600); width:100%;">AJOUTER</button>
-            </div><div id="manual-list-display"></div>`;
-            updateManualListDisplay();
-        }
+    container.innerHTML = `<div class="config-box box-orange">
+        <h3 style="margin-top:0; font-size: 14px; color: var(--primary-600);">HORS-STOCK (AJOUT MANUEL)</h3>
+        <input type="text" id="m-name" placeholder="Nom" class="input-std">
+        <input type="text" id="m-ref" placeholder="Réf (optionnel)" class="input-std">
+        <input type="number" id="m-qty" placeholder="Quantité" class="input-std">
+        <button onclick="addManualItem()" class="btn-action" style="background: var(--primary-600); width:100%;">AJOUTER</button>
+    </div><div id="manual-list-display"></div>`;
+    updateManualListDisplay();
+}
 
-
-        function addManualItem() {
-            const n = document.getElementById('m-name').value;
-            const r = document.getElementById('m-ref').value || "N/A";
-            const q = parseInt(document.getElementById('m-qty').value);
-            if(n && q > 0) { manualItems.push({ n, r, q }); showTab("MANUEL"); }
-        }
+function addManualItem() {
+    const n = document.getElementById('m-name').value;
+    const r = document.getElementById('m-ref').value || "N/A";
+    const q = parseInt(document.getElementById('m-qty').value);
+    if(n && q > 0) { manualItems.push({ n, r, q }); showTab("MANUEL"); }
+}
 
 function updateManualQty(index, change) {
     manualItems[index].q = Math.max(0, manualItems[index].q + change);
@@ -394,7 +393,7 @@ function updateManualQty(index, change) {
     showTab("MANUEL");
 }
 
-        function updateManualListDisplay() {
+function updateManualListDisplay() {
     const div = document.getElementById('manual-list-display');
     if (!div) return;
     div.innerHTML = "";
@@ -413,7 +412,6 @@ function updateManualQty(index, change) {
             </div>`;
     });
 }
-
 
 
         function exportData() {
